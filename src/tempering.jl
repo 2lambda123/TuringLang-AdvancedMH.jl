@@ -23,7 +23,7 @@ function (tj::TemperedJoint)(θ)
 end
 
 
-function MCMCTempering.make_tempered_model(model::DensityModel, β::T) where {T<:AbstractFloat}
+function MCMCTempering.make_tempered_model(model::DensityModel, β::Real)
     logdensity_β = TemperedJoint(model.logdensity.ℓprior, model.logdensity.ℓlikelihood, β)
     model_β = DensityModel(logdensity_β)
     return model_β
@@ -35,14 +35,14 @@ end
 #   SWAPPING
 #####################
 
-function MCMCTempering.make_tempered_logπ(model::DensityModel, β::T) where {T<:AbstractFloat}
+function MCMCTempering.make_tempered_loglikelihood(model::DensityModel, β::Real)
     function logπ(z)
-        return logdensity(model, z) * β
+        return model.logdensity.ℓlikelihood(z) * β
     end
     return logπ
 end
 
 
-function MCMCTempering.get_θ(trans::Transition)
+function MCMCTempering.get_params(trans::Transition)
     return trans.params
 end
